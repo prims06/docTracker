@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "46160699973",
+    "project_id": "doctracker-f3714",
+    "storage_bucket": "doctracker-f3714.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:46160699973:android:df6be0c98a96849220b92c",
+        "android_client_info": {
+          "package_name": "com.example.doc_tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "46160699973-10hcvuk3oq8af0jh4c98givj17gj27bh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCN6T2A3ZI-SjIK19R4n3LwYDejRQlrYtw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "46160699973-10hcvuk3oq8af0jh4c98givj17gj27bh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
