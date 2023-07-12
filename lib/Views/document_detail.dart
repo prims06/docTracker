@@ -1,10 +1,21 @@
+import 'dart:convert';
+
 import 'package:doc_tracker/Controllers/Firebase/Firebase.dart';
 import 'package:doc_tracker/Models/Class/Document.dart';
 import 'package:doc_tracker/Models/Class/data.dart';
 import 'package:doc_tracker/Models/Widgets/style.dart';
+import 'package:doc_tracker/Views/image_screen.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:localization/localization.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:math';
 
 class DocumentDetailScreen extends StatefulWidget {
   DocumentDetailScreen({super.key, required this.document});
@@ -19,6 +30,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
   AnimationController? controller;
   Animation<double>? animation;
   bool whatsapp = false;
+  File? image;
 
   @override
   void initState() {
@@ -36,7 +48,8 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
           .where((element) => element.fieldName != widget.document.documentType)
           .toList()
     ];
-    // FlutterLaunch.hasApp(name: "whatsapp").then((value) => {whatsapp = value, print("Here we go : "+ value.toString())});
+    print(widget.document.imageUrl);
+    urlToFile(widget.document.imageUrl);
     controller!.forward();
   }
 
@@ -45,6 +58,26 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
     controller!.dispose();
 
     super.dispose();
+  }
+
+  Future<void> urlToFile(String imageUrl) async {
+// generate random number.
+    var rng = new Random();
+// get temporary directory of device.
+    Directory tempDir = await getTemporaryDirectory();
+// get temporary path from temporary directory.
+    String tempPath = tempDir.path;
+// create a new file in temporary path with random file name.
+    File file = new File('$tempPath' + (rng.nextInt(100)).toString() + '.png');
+// call http.get method and pass imageUrl into it to get response.
+    http.Response response = await http.get(Uri.parse(imageUrl));
+// write bodyBytes received in response to file.
+    await file.writeAsBytes(response.bodyBytes);
+// now return the file which is created with random name in
+// temporary directory and image bytes from response is written to // that file.
+    setState(() {
+      image = file;
+    });
   }
 
   List<Category> categories = [];
@@ -56,7 +89,12 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          customIconButton(icon: Icons.arrow_back_ios),
+          customIconButton(context,
+            icon: Icons.arrow_back_ios,
+            press: () {
+              Navigator.of(context).pop();
+            },
+          ),
           GestureDetector(
             onTap: () {},
             child: Container(
@@ -64,7 +102,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
               decoration: BoxDecoration(
                   borderRadius: circularBorder,
                   color: ColorApp.defaultBackgroundColor,
-                  boxShadow: [boxShadow]),
+                  boxShadow:[boxShadow(context)]),
               child: Row(
                 children: [
                   Icon(
@@ -87,22 +125,6 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
     );
   }
 
-  // void whatsAppOpen() async {
-  // bool whatsapp = await FlutterLaunch.hasApp(name: "whatsapp");
-
-  // if (whatsapp) {
-  // var whatsappUrl =
-  //     "whatsapp://send?phone=237${widget.document.finderPhoneNumber}" +
-  //         "&text=${Uri.encodeComponent("Bonjour \n Je suis ${widget.document.docOwnerName} \n Je vous écrit à propos du document que vous avez trouvé m'appartenant")}";
-  // await FlutterLaunch.launchWhatsapp(
-  //     phone: "237${widget.document.finderPhoneNumber}",
-  //     message:
-  //         "Bonjour \n Je suis ${widget.document.docOwnerName} \n Je vous écrit à propos du document que vous avez trouvé m'appartenant");
-  // } else {
-  //   print('failed to open');
-  // }
-  // }
-
   Widget _productImage() {
     return AnimatedBuilder(
       builder: (context, child) {
@@ -115,7 +137,26 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
       animation: animation!,
       child: Stack(
         alignment: Alignment.bottomCenter,
-        children: <Widget>[Image.asset('assets/images/pattern_success.png')],
+        children: <Widget>[
+          // widget.document.imageUrl == null
+          //     ? Image.asset('assets/images/pattern_success.png')
+          //     :
+          Center(
+            child: LoadingAnimationWidget.horizontalRotatingDots(
+              color: primaryMain,
+              size: 75,
+            ),
+          ),
+          image != null
+              ? GestureDetector(
+                  child: Image.file(image!),
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ImageScreen(image: image!)));
+                  },
+                )
+              : Container(),
+        ],
       ),
     );
   }
@@ -162,7 +203,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
               color: ColorApp.defaultBackgroundColor),
           child: SingleChildScrollView(
             controller: scrollController,
-            physics: NeverScrollableScrollPhysics(),
+            // physics: NeverScrollableScrollPhysics(),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               // crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,32 +220,10 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                   ),
                 ),
-                Container(
-                  margin: paddingSymetric(vertical: 24),
-                  padding: paddingAll(8),
-                  decoration: BoxDecoration(
-                    borderRadius: circularBorder,
-                    color: ColorApp.defaultBackgroundColor,
-                    border: Border.all(width: 0.5, color: primaryMain),
-                    // boxShadow: [boxShadow]
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.warning_sharp,
-                        color: Colors.yellowAccent,
-                      ),
-                      Container(
-                        width: getSize(context).width / 1.5,
-                        child: Text(
-                          'Veuillez vous assurer que ce document soit conforme et ne soit pas juste une tentative d\'arnaque',
-                          style: footnoteStyle(ColorApp.primaryText),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                alertContainer(
+                    context: context,
+                    text:
+                        'Veuillez vous assurer que ce document soit conforme et ne soit pas juste une tentative d\'arnaque'),
                 Text(
                   widget.document.docOwnerName.toUpperCase(),
                   textAlign: TextAlign.center,
@@ -248,8 +267,6 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
                                     "&text=${Uri.encodeComponent("Bonjour \n Je suis ${widget.document.docOwnerName} \n Je vous écrit à propos du document que vous avez trouvé m'appartenant")}";
                             await launchUrl(Uri.parse(whatsappUrl));
                           },
-                         
-
                           child: Container(
                             padding: paddingOnly(
                                 left: 16, top: 10, right: 16, bottom: 10),
@@ -258,7 +275,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
                                 borderRadius: circularBorder,
                                 gradient: kPrimaryGradientColor,
                                 color: ColorApp.defaultBackgroundColor,
-                                boxShadow: [boxShadow]),
+                                boxShadow:[boxShadow(context)]),
                             child: Icon(
                               Icons.whatsapp,
                               color: white,
@@ -280,7 +297,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
                                   border:
                                       Border.all(width: 1, color: primaryMain),
                                   color: ColorApp.defaultBackgroundColor,
-                                  boxShadow: [boxShadow]),
+                                  boxShadow:[boxShadow(context)]),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -303,7 +320,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -329,13 +346,17 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
           )),
           child: Stack(
             children: <Widget>[
-              Column(
+              Stack(
                 children: <Widget>[
+                  Container(
+                      padding: paddingOnly(top: 8),
+                      height: getSize(context).height / 2.23,
+                      width: getSize(context).width,
+                      child: _productImage()),
                   _appBar(),
-                  _productImage(),
                 ],
               ),
-              _detailWidget()
+              _detailWidget(),
             ],
           ),
         ),
@@ -359,7 +380,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
               color: isSelected ? primaryMain : ColorApp.disabledText,
               width: isSelected ? 2 : 1,
             ),
-            boxShadow: [boxShadow]),
+            boxShadow:[boxShadow(context)]),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

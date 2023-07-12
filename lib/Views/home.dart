@@ -112,7 +112,7 @@
 //             decoration: BoxDecoration(
 //                 borderRadius: circularBorder,
 //                 color: ColorApp.defaultBackgroundColor,
-//                 boxShadow: [boxShadow]),
+//                 boxShadow [boxShadow(context)]),
 //             child: Icon(
 //               Icons.filter_list,
 //               color: ColorApp.blackWhiteColor,
@@ -147,7 +147,7 @@
 //                 color: model.isSelected ? primaryMain : Colors.grey,
 //                 width: model.isSelected ? 2 : 1,
 //               ),
-//               boxShadow: [boxShadow]),
+//               boxShadow [boxShadow(context)]),
 //           child: Row(
 //             mainAxisSize: MainAxisSize.min,
 //             children: [

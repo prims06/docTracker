@@ -6,6 +6,7 @@ class Document {
   final String docOwnerName;
   final String documentType;
   final String finderPhoneNumber;
+  final String imageUrl;
   final int timestampAsSecond;
   final format = DateFormat('dd-MM-yyyy');
   final format2 = DateFormat('dd.MM.yyyyTHH:mm');
@@ -14,6 +15,7 @@ class Document {
       {required this.docOwnerName,
       required this.documentType,
       required this.finderPhoneNumber,
+      this.imageUrl = '',
       required this.timestampAsSecond,
       required this.documentId});
 
@@ -36,6 +38,7 @@ class Document {
         documentId: documentSnapshot.id,
         docOwnerName: doc["docOwnerName"],
         documentType: doc["documentType"],
+        imageUrl: doc["imageUrl"],
         finderPhoneNumber: doc["finderPhoneNumber"],
         timestampAsSecond: doc["timestampAsSecond"]);
   }
@@ -47,6 +50,7 @@ class Document {
           documentId: doc.id,
           docOwnerName: doc["docOwnerName"],
           documentType: doc["documentType"],
+          imageUrl: doc["imageUrl"],
           finderPhoneNumber: doc["finderPhoneNumber"],
           timestampAsSecond: doc["timestampAsSecond"]);
       documents.add(document);

@@ -1,0 +1,46 @@
+{
+    "project_info": {
+      "project_number": "826875855201",
+      "project_id": "loli-prod",
+      "storage_bucket": "loli-prod.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:826875855201:android:bf98b36bdc295e4af88520",
+          "android_client_info": {
+            "package_name": "cm.loli"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "826875855201-9t5alrmue9ov2hk1enumv6sah9798m1a.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyCfqr7357Mr_UUwpVtgXqMJ6BtplqUe1zA"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "826875855201-9t5alrmue9ov2hk1enumv6sah9798m1a.apps.googleusercontent.com",
+                "client_type": 3
+              },
+              {
+                "client_id": "826875855201-jbf3sve9mk0j08v3s7co9hpqtkk6qdj0.apps.googleusercontent.com",
+                "client_type": 2,
+                "ios_info": {
+                  "bundle_id": "cm.loli"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

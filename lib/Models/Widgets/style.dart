@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:localization/localization.dart';
 
 class ColorApp {
   static late Color shadowColor;
@@ -66,11 +67,14 @@ Widget space = const SizedBox(
   height: 16,
 );
 
-BoxShadow boxShadow = BoxShadow(
-    color: ColorApp.shadowColor,
-    blurRadius: 5,
-    spreadRadius: 10,
-    offset: Offset(5, 5));
+BoxShadow boxShadow(BuildContext context) {
+  ColorApp().init(context);
+  return BoxShadow(
+      color: ColorApp.shadowColor,
+      blurRadius: 5,
+      spreadRadius: 10,
+      offset: Offset(5, 5));
+}
 
 int defaultTextStyle = 16;
 int shadow = 4;
@@ -177,7 +181,7 @@ TextStyle linkFootnoteStyle(Color c) {
       color: c);
 }
 
-Widget customIconButton({Function()? press, required IconData icon}) =>
+Widget customIconButton(context, {Function()? press, required IconData icon}) =>
     GestureDetector(
       onTap: press,
       child: Container(
@@ -185,10 +189,113 @@ Widget customIconButton({Function()? press, required IconData icon}) =>
         decoration: BoxDecoration(
             borderRadius: circularBorder,
             color: ColorApp.defaultBackgroundColor,
-            boxShadow: [boxShadow]),
+            boxShadow: [boxShadow(context)]),
         child: Icon(
           icon,
           color: ColorApp.blackWhiteColor,
         ),
       ),
     );
+
+Widget alertContainer(
+        {context,
+        text,
+        icon = Icons.warning_sharp,
+        color = Colors.yellowAccent}) =>
+    Container(
+      margin: paddingSymetric(vertical: 24),
+      padding: paddingAll(8),
+      decoration: BoxDecoration(
+        borderRadius: circularBorder,
+        color: ColorApp.defaultBackgroundColor,
+        border: Border.all(width: 0.5, color: primaryMain),
+        // boxShadow [boxShadow(context)]
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: color,
+          ),
+          Container(
+            width: getSize(context).width / 1.5,
+            child: Text(
+              text,
+              style: footnoteStyle(ColorApp.primaryText),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+
+Future<void> showAlertDialog(
+    {required BuildContext context,
+    required String title,
+    required String body,
+    bool? isError,
+    VoidCallback? method}) {
+  // ignore: missing_return
+  return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16.0))),
+          contentPadding: EdgeInsets.all(0),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  padding:
+                      EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 8),
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: subtitleStyle((isError != null && isError)
+                        ? errorMain
+                        : ColorApp.secondaryText),
+                  ),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 20, right: 20),
+                  child: Text(
+                    body,
+                    // maxLines: 2,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: ColorApp.secondaryText,
+                        fontFamily: 'SignikaNegative',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                        inherit: false),
+                  ),
+                ),
+                SizedBox(
+                  height: 28,
+                ),
+                Divider(
+                  height: 1,
+                  color: ColorApp.secondaryText.withOpacity(0.5),
+                ),
+                Center(
+                  child: TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        method;
+                      },
+                      child: Text(
+                        "done_text".i18n(),
+                        style: buttonStyle(primaryMain),
+                      )),
+                ),
+              ],
+            ),
+          ),
+        );
+      });
+}

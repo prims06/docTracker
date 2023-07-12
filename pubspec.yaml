@@ -51,6 +51,8 @@ dependencies:
   dropdown_button2: ^1.5.2
   loading_animation_widget:
   url_launcher:
+  http: 
+  path_provider: 
 
 dev_dependencies:
   flutter_test:

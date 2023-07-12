@@ -16,7 +16,7 @@ class DocumentCard extends StatelessWidget {
         decoration: BoxDecoration(
             color: ColorApp.defaultBackgroundColor,
             borderRadius: BorderRadius.all(Radius.circular(20)),
-            boxShadow: [boxShadow]),
+            boxShadow: [boxShadow(context)]),
         // margin: EdgeInsets.symmetric(vertical: !product.isSelected ? 20 : 0),
         child: Container(
           width: 150,
@@ -42,8 +42,7 @@ class DocumentCard extends StatelessWidget {
                   ),
                   // SizedBox(height: 5),
                   Text(
-                    doc.docOwnerName
-                        .toLowerCase().toTitleCase(),
+                    doc.docOwnerName.toLowerCase().toTitleCase(),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                     style: bodyStyle(ColorApp.primaryText, fontSize: 20),
@@ -62,10 +61,13 @@ class DocumentCard extends StatelessWidget {
           ),
         ));
   }
-  
 }
 
 extension StringCasingExtension on String {
-  String toCapitalized() => length > 0 ?'${this[0].toUpperCase()}${substring(1).toLowerCase()}':'';
-  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
+  String toCapitalized() =>
+      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
+      .split(' ')
+      .map((str) => str.toCapitalized())
+      .join(' ');
 }

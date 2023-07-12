@@ -3,6 +3,7 @@ import 'package:doc_tracker/Models/Widgets/style.dart';
 import 'package:doc_tracker/Views/documents.dart';
 import 'package:doc_tracker/Views/home.dart';
 import 'package:doc_tracker/Views/home_screen.dart';
+import 'package:doc_tracker/Views/nav-bar.dart';
 import 'package:doc_tracker/Views/theme_const.dart';
 import 'package:doc_tracker/Views/theme_manager.dart';
 import 'package:doc_tracker/firebase_options.dart';
@@ -69,7 +70,7 @@ class _MyAppState extends State<MyApp> {
       darkTheme: darkTheme,
       themeMode: themeManager.themeMode,
       
-      home: DocumentsScreen(),
+      home: BottomNavBar(),
     );
   }
 }

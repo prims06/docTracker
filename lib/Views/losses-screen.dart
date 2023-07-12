@@ -11,15 +11,15 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-class DocumentsScreen extends StatefulWidget {
-  const DocumentsScreen({Key? key}) : super(key: key);
+class DocumentsLostScreen extends StatefulWidget {
+  const DocumentsLostScreen({Key? key}) : super(key: key);
 
   @override
-  State<DocumentsScreen> createState() => _DocumentsScreenState();
+  State<DocumentsLostScreen> createState() => _DocumentsLostScreenState();
 }
 
-class _DocumentsScreenState extends State<DocumentsScreen> {
-  _DocumentsScreenState();
+class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
+  _DocumentsLostScreenState();
   List<Document>? Alldocuments;
   List<Document>? Docs;
   bool filtering = false;
@@ -35,7 +35,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         .orderBy('timestampAsSecond', descending: true)
         .get();
     setState(() {
-      Docs = Alldocuments = Document.fromQuerySnapshot(querySnapshot);
+      Docs = Alldocuments = [];
     });
   }
 
@@ -67,7 +67,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Found',
+                'Lost',
                 style: bodyLightStyle(ColorApp.primaryText, fontSize: 30),
               ),
               Text(
@@ -115,34 +115,36 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
 
     Widget pageScaffold(Widget search, Widget listElement) => Scaffold(
-          body: Container(
-            padding: paddingOnly(top: 70, bottom: 16, right: 16, left: 16),
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('assets/images/pattern_success.png'),
-                    opacity: 0.3,
-                    fit: BoxFit.cover)),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body:  Container(
+                padding: paddingOnly(top: 70, bottom: 16, right: 16, left: 16),
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage('assets/images/pattern_success.png'),
+                        opacity: 0.3,
+                        fit: BoxFit.cover)),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      customIconButton(context, press: () {
-                        // Navigator.of(context).push(MaterialPageRoute(
-                        //     builder: (context) => MakeAnnouncePage()));
-                      }, icon: Icons.sort),
-                      customIconButton(context,
-                          press: () {}, icon: Icons.person)
-                    ],
-                  ),
-                  Container(padding: const EdgeInsets.all(10.0)),
-                  search,
-                  listElement
-                ]),
-          ),
-        );
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          customIconButton(context,
+                              press: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        MakeAnnouncePage()));
+                              },
+                              icon: Icons.sort),
+                          customIconButton(context,press: () {}, icon: Icons.person)
+                        ],
+                      ),
+                      Container(padding: const EdgeInsets.all(10.0)),
+                      search,
+                      listElement
+                    ]),
+              ),
+            );
 
     return pageScaffold(
         UpPage,
@@ -203,7 +205,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             ),
           ),
           SizedBox(width: 20),
-          customIconButton(context, press: () {}, icon: Icons.filter_list)
+          customIconButton(context,press: () {}, icon: Icons.filter_list)
         ],
       ),
     );
