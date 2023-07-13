@@ -25,6 +25,41 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
   String telephone = '';
   String category = '';
   bool isLoading = false;
+  String errorText = '';
+
+  getErrorText() {
+    if (firstname != '') {
+      setState(() {
+        errorText = 'Veuillez renseigner le nom du proprietaire du document !';
+      });
+    } else if (category != '') {
+      setState(() {
+        errorText =
+            'Veuillez choisir le type de document que vous avez trouvé !';
+      });
+    } else if (surname != '') {
+      setState(() {
+        errorText =
+            'Veuillez renseigner le prenom du proprietaire du document !';
+      });
+    } else if (image != null) {
+      setState(() {
+        errorText =
+            'Veuillez renseigner une image du document en votre possession !';
+      });
+    } else if (telephone.length != 9) {
+      setState(() {
+        errorText =
+            'Veuillez renseigner correctement votre numero de telephone. Celui doit avoir 9 chiffres !';
+      });
+    }
+
+    Future.delayed(Duration(seconds: 3), () => {});
+    setState(() {
+      errorText = '';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     ColorApp().init(context);
@@ -116,10 +151,17 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
                 ),
               ),
             ),
-            alertContainer(
-                context: context,
-                text:
-                    'Veuillez a renseignez les informations conforment a celles du document en votre presence'),
+            errorText != ''
+                ? alertContainer(
+                    context: context,
+                    icon: Icons.error,
+                    color: errorMain,
+                    text: errorText,
+                    width: 2)
+                : alertContainer(
+                    context: context,
+                    text:
+                        'Veuillez a renseignez les informations conforment a celles du document en votre presence'),
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
@@ -285,7 +327,7 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
                                               child: Text(
                                                 category != ''
                                                     ? category
-                                                    : 'Caterory',
+                                                    : 'Type de document',
                                                 style: bodyStyle(
                                                     ColorApp.secondaryText),
                                               ),
@@ -472,13 +514,20 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
                                                   builder: (context) =>
                                                       BottomNavBar()));
                                         } else {
-                                          // print();
+                                          setState(() {
+                                            errorText =
+                                                'Desole une erreur est servenue, Veuillez reessayer plus tard';
+                                          });
                                         }
                                       } else {
-                                        print('url null');
+                                        setState(() {
+                                          errorText =
+                                              'Desole une erreur est servenue, Veuillez reessayer plus tard';
+                                        });
                                       }
                                     } else {
                                       print('data not correct');
+                                      getErrorText();
                                     }
                                     setState(() {
                                       isLoading = false;

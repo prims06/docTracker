@@ -201,14 +201,15 @@ Widget alertContainer(
         {context,
         text,
         icon = Icons.warning_sharp,
-        color = Colors.yellowAccent}) =>
+        color = Colors.yellowAccent,
+        width = 0.5}) =>
     Container(
       margin: paddingSymetric(vertical: 24),
       padding: paddingAll(8),
       decoration: BoxDecoration(
         borderRadius: circularBorder,
         color: ColorApp.defaultBackgroundColor,
-        border: Border.all(width: 0.5, color: primaryMain),
+        border: Border.all(width: width, color: primaryMain),
         // boxShadow [boxShadow(context)]
       ),
       child: Row(
@@ -299,3 +300,54 @@ Future<void> showAlertDialog(
         );
       });
 }
+
+Widget CustomAppBar(
+        {required String label,
+        required BuildContext context}) =>
+    Container(
+      height: 103,
+      width: double.infinity,
+      decoration: BoxDecoration(
+          color: ColorApp.defaultBackgroundColor,
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(24),
+              bottomRight: Radius.circular(24)),
+          boxShadow: [boxShadow(context)]),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop("isPop");
+                    },
+                    child: Container(
+                      height: 60,
+                      margin: const EdgeInsets.only(top: 42, left: 16),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 25,
+                        color: primaryMain,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 28,
+                    margin: const EdgeInsets.only(top: 48, left: 16),
+                    child: Center(
+                        child: Text(
+                      label,
+                      style: subtitleStyle(ColorApp.primaryText),
+                    )),
+                  ),
+                  // const Icon(Icons.filter)
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );

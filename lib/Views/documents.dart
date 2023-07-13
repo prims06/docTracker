@@ -116,7 +116,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     Widget pageScaffold(Widget search, Widget listElement) => Scaffold(
           body: Container(
-            padding: paddingOnly(top: 70, bottom: 16, right: 16, left: 16),
+            padding: paddingOnly(top: 70, bottom: 0, right: 16, left: 16),
             decoration: const BoxDecoration(
                 image: DecorationImage(
                     image: AssetImage('assets/images/pattern_success.png'),

@@ -2,6 +2,7 @@ import 'package:doc_tracker/Models/Widgets/style.dart';
 import 'package:doc_tracker/Views/announce.dart';
 import 'package:doc_tracker/Views/documents.dart';
 import 'package:doc_tracker/Views/losses-screen.dart';
+import 'package:doc_tracker/profile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,7 +21,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     DocumentsScreen(),
     DocumentsLostScreen(),
     MakeAnnouncePage(),
-    Container(),
+    ProfileScreen(),
   ];
 
   @override
@@ -113,7 +114,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       decoration: BoxDecoration(
         color: ColorApp.defaultBackgroundColor,
         borderRadius: BorderRadius.circular(25),
-        boxShadow: [_boxSH()],
+        boxShadow: [boxShadow(context)],
       ),
       child: Row(
         children: _navBarItemList,

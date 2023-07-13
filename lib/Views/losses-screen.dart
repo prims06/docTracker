@@ -115,36 +115,34 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
     }
 
     Widget pageScaffold(Widget search, Widget listElement) => Scaffold(
-        body:  Container(
-                padding: paddingOnly(top: 70, bottom: 16, right: 16, left: 16),
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage('assets/images/pattern_success.png'),
-                        opacity: 0.3,
-                        fit: BoxFit.cover)),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          body: Container(
+            padding: paddingOnly(top: 70, bottom: 0, right: 16, left: 16),
+            decoration: const BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('assets/images/pattern_success.png'),
+                    opacity: 0.3,
+                    fit: BoxFit.cover)),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          customIconButton(context,
-                              press: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        MakeAnnouncePage()));
-                              },
-                              icon: Icons.sort),
-                          customIconButton(context,press: () {}, icon: Icons.person)
-                        ],
-                      ),
-                      Container(padding: const EdgeInsets.all(10.0)),
-                      search,
-                      listElement
-                    ]),
-              ),
-            );
+                      customIconButton(context, press: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => MakeAnnouncePage()));
+                      }, icon: Icons.sort),
+                      customIconButton(context,
+                          press: () {}, icon: Icons.person)
+                    ],
+                  ),
+                  Container(padding: const EdgeInsets.all(10.0)),
+                  search,
+                  listElement
+                ]),
+          ),
+        );
 
     return pageScaffold(
         UpPage,
@@ -205,7 +203,7 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
             ),
           ),
           SizedBox(width: 20),
-          customIconButton(context,press: () {}, icon: Icons.filter_list)
+          customIconButton(context, press: () {}, icon: Icons.filter_list)
         ],
       ),
     );

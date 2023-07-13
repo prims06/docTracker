@@ -4,6 +4,7 @@ import 'package:doc_tracker/Views/documents.dart';
 import 'package:doc_tracker/Views/home.dart';
 import 'package:doc_tracker/Views/home_screen.dart';
 import 'package:doc_tracker/Views/nav-bar.dart';
+import 'package:doc_tracker/Views/sign_in/sign_in_screen.dart';
 import 'package:doc_tracker/Views/theme_const.dart';
 import 'package:doc_tracker/Views/theme_manager.dart';
 import 'package:doc_tracker/firebase_options.dart';
@@ -56,21 +57,20 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                LocalJsonLocalization.delegate,
-              ],
-              supportedLocales: const [
-                Locale('en', 'US'),
-                Locale('fr', 'FR'),
-              ],
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        LocalJsonLocalization.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', 'US'),
+        Locale('fr', 'FR'),
+      ],
       title: 'Doc Tracker',
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeManager.themeMode,
-      
-      home: BottomNavBar(),
+      home: SignInScreen(),
     );
   }
 }
