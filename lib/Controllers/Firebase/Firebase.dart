@@ -32,6 +32,12 @@ class Firebase {
     }
   }
 
+  static Future<bool> sendDataToID(
+      String collectionName, String id, Map<String, dynamic> data) async {
+    await db.collection(collectionName).doc(id).set(data);
+      return true;
+  }
+
   static Future<String> uploadImage(XFile image, BuildContext context) async {
     var storage = FirebaseStorage.instance;
     if (image != null) {

@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'components/body.dart';
 
 class OtpScreen extends StatelessWidget {
-  static String routeName = "/otp";
+  OtpScreen({required this.phoneNumber});
+  final String phoneNumber;
   @override
   Widget build(BuildContext context) {
     ColorApp().init(context);
@@ -14,7 +15,7 @@ class OtpScreen extends StatelessWidget {
       // appBar: AppBar(
       //   title: Text("OTP Verification"),
       // ),
-      body: Body(),
+      body: Body(phoneNumber: phoneNumber),
     );
   }
 }

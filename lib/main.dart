@@ -4,6 +4,7 @@ import 'package:doc_tracker/Views/documents.dart';
 import 'package:doc_tracker/Views/home.dart';
 import 'package:doc_tracker/Views/home_screen.dart';
 import 'package:doc_tracker/Views/nav-bar.dart';
+import 'package:doc_tracker/Views/otp/otp_screen.dart';
 import 'package:doc_tracker/Views/sign_in/sign_in_screen.dart';
 import 'package:doc_tracker/Views/theme_const.dart';
 import 'package:doc_tracker/Views/theme_manager.dart';

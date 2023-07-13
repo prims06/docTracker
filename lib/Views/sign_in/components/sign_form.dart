@@ -1,7 +1,10 @@
+import 'package:doc_tracker/Controllers/Firebase/Auth.dart';
+import 'package:doc_tracker/Views/nav-bar.dart';
 import 'package:flutter/material.dart';
 import 'package:doc_tracker/Models/Widgets/style.dart';
 import 'package:doc_tracker/Models/Widgets/button.dart';
 import 'package:doc_tracker/Models/Widgets/const.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class SignForm extends StatefulWidget {
   @override
@@ -12,7 +15,8 @@ class _SignFormState extends State<SignForm> {
   final _formKey = GlobalKey<FormState>();
   String? email;
   String? password;
-  bool? remember = false;
+  bool visible = false;
+  bool isLoadingSignIn = false;
   final List<String?> errors = [];
 
   void addError({String? error}) {
@@ -32,62 +36,86 @@ class _SignFormState extends State<SignForm> {
   @override
   Widget build(BuildContext context) {
     ColorApp().init(context);
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          buildEmailFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
-          buildPasswordFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
-          Row(
+    return Stack(
+      children: [
+        Form(
+          key: _formKey,
+          child: Column(
             children: [
-              Checkbox(
-                value: remember,
-                activeColor: primaryMain,
-                onChanged: (value) {
-                  setState(() {
-                    remember = value;
-                  });
-                },
+              buildEmailFormField(),
+              SizedBox(height: getProportionateScreenHeight(30)),
+              buildPasswordFormField(),
+              SizedBox(height: getProportionateScreenHeight(30)),
+              Row(
+                children: [
+                  Container(),
+                  Spacer(),
+                  GestureDetector(
+                    onTap: () => {},
+                    child: Text(
+                      "Forgot Password",
+                      style: buttonStyle(ColorApp.secondaryText),
+                    ),
+                  )
+                ],
               ),
-              Text("Remember me"),
-              Spacer(),
-              GestureDetector(
-                onTap: () =>{},
-                child: Text(
-                  "Forgot Password",
-                  style: TextStyle(decoration: TextDecoration.underline),
-                ),
-              )
+              FormError(errors: errors),
+              SizedBox(height: getProportionateScreenHeight(20)),
+              DefaultButton(
+                  text: "Continue",
+                  press: () async {
+                    setState(() {
+                      isLoadingSignIn = true;
+                    });
+                    if (_formKey.currentState!.validate()) {
+                      if (_formKey.currentState!.validate()) {
+                        final result =
+                            await AuthServices.SignInWithEmailAndPassword(
+                                '$email@$domainNameService', password);
+                        if (result) {
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: ((context) => BottomNavBar())));
+                        } else {
+                          addError(error: unknowError);
+                        }
+
+                        _formKey.currentState!.save();
+                        // if all are valid then go to success screen
+                        // KeyboardUtil.hideKeyboard(context);
+                        // Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                      }
+                      setState(() {
+                        isLoadingSignIn = false;
+                      });
+                    }
+                  }),
             ],
           ),
-          FormError(errors: errors),
-          SizedBox(height: getProportionateScreenHeight(20)),
-          DefaultButton(
-            text: "Continue",
-            press: () {
-              if (_formKey.currentState!.validate()) {
-                _formKey.currentState!.save();
-                // if all are valid then go to success screen
-                // KeyboardUtil.hideKeyboard(context);
-                // Navigator.pushNamed(context, LoginSuccessScreen.routeName);
-              }
-            },
-          ),
-        ],
-      ),
+        ),
+        if (isLoadingSignIn)
+          Container(
+            color: ColorApp.defaultBackgroundColor.withOpacity(0.2),
+            height: getSize(context).height,
+            child: Center(
+              child: LoadingAnimationWidget.horizontalRotatingDots(
+                color: primaryMain,
+                size: 75,
+              ),
+            ),
+          )
+      ],
     );
   }
 
   TextFormField buildPasswordFormField() {
     return TextFormField(
-      obscureText: true,
+      obscureText: !visible,
       onSaved: (newValue) => password = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
           removeError(error: kPassNullError);
-        } else if (value.length >= 8) {
+        } else if (value.length >= 6) {
           removeError(error: kShortPassError);
         }
         return null;
@@ -96,53 +124,48 @@ class _SignFormState extends State<SignForm> {
         if (value!.isEmpty) {
           addError(error: kPassNullError);
           return "";
-        } else if (value.length < 8) {
+        } else if (value.length < 6) {
           addError(error: kShortPassError);
           return "";
         }
         return null;
       },
-      decoration: InputDecoration(
-        labelText: "Password",
-        hintText: "Enter your password",
-        // If  you are using latest version of flutter then lable text and hint text shown like this
-        // if you r using flutter less then 1.20.* then maybe this is not working properly
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
-      ),
+      cursorColor: primaryMain,
+      decoration: inputDecoration(
+          'Password', "Enter your password", "assets/icons/Lock.svg",
+          press: () {
+        setState(() {
+          visible = !visible;
+        });
+      }),
     );
   }
 
   TextFormField buildEmailFormField() {
     return TextFormField(
-      keyboardType: TextInputType.emailAddress,
+      keyboardType: TextInputType.phone,
       onSaved: (newValue) => email = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
           removeError(error: kEmailNullError);
-        } else if (emailValidatorRegExp.hasMatch(value)) {
+        } else if (value.length == 9) {
           removeError(error: kInvalidEmailError);
         }
-        return null;
+        email = value;
       },
       validator: (value) {
         if (value!.isEmpty) {
           addError(error: kEmailNullError);
           return "";
-        } else if (!emailValidatorRegExp.hasMatch(value)) {
+        } else if (value.length != 9) {
           addError(error: kInvalidEmailError);
           return "";
         }
         return null;
       },
-      decoration: InputDecoration(
-        labelText: "Email",
-        hintText: "Enter your email",
-        // If  you are using latest version of flutter then lable text and hint text shown like this
-        // if you r using flutter less then 1.20.* then maybe this is not working properly
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
-      ),
+      cursorColor: primaryMain,
+      decoration: inputDecoration(
+          "Phone Number", "Enter your phone number", "assets/icons/phone.svg"),
     );
   }
 }

@@ -18,7 +18,7 @@ class Body extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: SizeConfig.screenHeight * 0.04),
+                SizedBox(height: SizeConfig.screenHeight * 0.09),
                 Text(
                   "Welcome Back",
                   style: supertitleStyle(ColorApp.primaryText),
@@ -27,8 +27,8 @@ class Body extends StatelessWidget {
                 Text(
                   "Sign in with your email and password  \nor continue with social media",
                   textAlign: TextAlign.center,
+                  style: bodyLightStyle(ColorApp.secondaryText),
                 ),
-                
                 SizedBox(height: 20),
                 SizedBox(height: SizeConfig.screenHeight * 0.08),
                 SignForm(),

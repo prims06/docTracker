@@ -72,14 +72,18 @@ double getProportionateScreenWidth(double inputWidth) {
 // Form Error
 final RegExp emailValidatorRegExp =
     RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-const String kEmailNullError = "Please Enter your email";
-const String kInvalidEmailError = "Please Enter Valid Email";
+const String kEmailNullError = "Please Enter your phone number";
+const String kFirstNameNullError = "Please Enter your first name";
+const String kSurNameNullError = "Please Enter your Surname";
+const String kInvalidEmailError = "Please Enter Valid Phone Number";
 const String kPassNullError = "Please Enter your password";
 const String kShortPassError = "Password is too short";
 const String kMatchPassError = "Passwords don't match";
 const String kNamelNullError = "Please Enter your name";
 const String kPhoneNumberNullError = "Please Enter your phone number";
 const String kAddressNullError = "Please Enter your address";
+const String unknowError = "Authentification failed ! Please retry";
+const String domainNameService = "tracker.cm";
 
 otpInputDecoration(BuildContext context) => InputDecoration(
       contentPadding:
@@ -167,10 +171,13 @@ class NoAccountText extends StatelessWidget {
       children: [
         Text(
           "Don’t have an account? ",
-          style: TextStyle(fontSize: getProportionateScreenWidth(16)),
+          style: bodyLightStyle(ColorApp.secondaryText),
         ),
         GestureDetector(
-          onTap: () => {Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SignUpScreen()))},
+          onTap: () => {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => SignUpScreen()))
+          },
           child: Text(
             "Sign Up",
             style: TextStyle(
@@ -181,3 +188,44 @@ class NoAccountText extends StatelessWidget {
     );
   }
 }
+
+InputDecoration inputDecoration(label, hint, icon,
+        {pass = false, void Function()? press}) =>
+    InputDecoration(
+      contentPadding: EdgeInsets.only(left: 12, bottom: 8),
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          borderSide: BorderSide(
+            color: primaryMain,
+            width: 1,
+          )),
+      focusColor: primaryMain,
+      focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          borderSide: BorderSide(
+            color: errorMain,
+            width: 1,
+          )),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          borderSide: BorderSide(
+            color: primaryMain,
+            width: 1,
+          )),
+      errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          borderSide: BorderSide(
+            color: errorMain,
+            width: 1,
+          )),
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      suffixIcon: pass
+          ? GestureDetector(
+              onTap: press, child: CustomSurffixIcon(svgIcon: icon))
+          : CustomSurffixIcon(svgIcon: icon),
+      // hintText: 'Entrez le nom ici',
+      labelText: label,
+      hintText: hint,
+      labelStyle: bodyLightStyle(ColorApp.secondaryText),
+      hintStyle: bodyLightStyle(ColorApp.secondaryText),
+    );
