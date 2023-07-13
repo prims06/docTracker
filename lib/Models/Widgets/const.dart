@@ -85,6 +85,8 @@ const String kAddressNullError = "Please Enter your address";
 const String unknowError = "Authentification failed ! Please retry";
 const String domainNameService = "tracker.cm";
 
+int get getStamp => (DateTime.now().millisecondsSinceEpoch / 1000).round();
+
 otpInputDecoration(BuildContext context) => InputDecoration(
       contentPadding:
           EdgeInsets.symmetric(vertical: getProportionateScreenWidth(15)),

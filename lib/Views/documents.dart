@@ -144,19 +144,22 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           ),
         );
 
-    return pageScaffold(
-        UpPage,
-        Docs == null
-            ? SizedBox(
-                height: getSize(context).height / 2.5,
-                child: Center(
-                  child: LoadingAnimationWidget.horizontalRotatingDots(
-                    color: primaryMain,
-                    size: 75,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+      child: pageScaffold(
+          UpPage,
+          Docs == null
+              ? SizedBox(
+                  height: getSize(context).height / 2.5,
+                  child: Center(
+                    child: LoadingAnimationWidget.horizontalRotatingDots(
+                      color: primaryMain,
+                      size: 75,
+                    ),
                   ),
-                ),
-              )
-            : listView());
+                )
+              : listView()),
+    );
   }
 
   @override

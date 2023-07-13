@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:doc_tracker/Controllers/Firebase/Firebase.dart';
 import 'package:doc_tracker/Models/Class/Document.dart';
+import 'package:doc_tracker/Models/Class/Loss.dart';
 import 'package:doc_tracker/Models/Class/data.dart';
 import 'package:doc_tracker/Models/Widgets/style.dart';
 import 'package:doc_tracker/Views/nav-bar.dart';
@@ -25,67 +26,52 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
   String telephone = '';
   String category = '';
   bool isLoading = false;
+  bool isLost = true;
   String errorText = '';
 
-  getErrorText() {
-    if (firstname != '') {
-      setState(() {
-        errorText = 'Veuillez renseigner le nom du proprietaire du document !';
-      });
-    } else if (category != '') {
-      setState(() {
-        errorText =
-            'Veuillez choisir le type de document que vous avez trouvé !';
-      });
-    } else if (surname != '') {
-      setState(() {
-        errorText =
-            'Veuillez renseigner le prenom du proprietaire du document !';
-      });
-    } else if (image != null) {
-      setState(() {
-        errorText =
-            'Veuillez renseigner une image du document en votre possession !';
-      });
-    } else if (telephone.length != 9) {
-      setState(() {
-        errorText =
-            'Veuillez renseigner correctement votre numero de telephone. Celui doit avoir 9 chiffres !';
-      });
+  String get getErrorText {
+    print('verifie error');
+    if (firstname == '') {
+      return 'Veuillez renseigner le nom du proprietaire du document !';
+    } else if (category == '') {
+      return 'Veuillez choisir le type de document concerné !';
+    } else if (surname == '') {
+      return 'Veuillez renseigner le prenom du proprietaire du document !';
+    } else if (image == null && !isLost) {
+      return 'Veuillez renseigner une image du document en votre possession !';
     }
-
-    Future.delayed(Duration(seconds: 3), () => {});
-    setState(() {
-      errorText = '';
-    });
+    return '';
   }
 
   @override
   Widget build(BuildContext context) {
     ColorApp().init(context);
-    return Scaffold(
-      body: Container(
-          decoration: const BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/images/pattern_success.png'),
-                  opacity: 0.3,
-                  fit: BoxFit.cover)),
-          child: Stack(
-            children: [
-              SingleChildScrollView(child: planer()),
-              if (isLoading)
-                Container(
-                  color: ColorApp.defaultBackgroundColor.withOpacity(0.2),
-                  height: getSize(context).height,
-                  child: Center(
-                    child: LoadingAnimationWidget.horizontalRotatingDots(
-                      color: primaryMain,
-                      size: 75,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+      child: Scaffold(
+        body: Container(
+            decoration: const BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('assets/images/pattern_success.png'),
+                    opacity: 0.3,
+                    fit: BoxFit.cover)),
+            child: Stack(
+              children: [
+                SingleChildScrollView(child: planer()),
+                if (isLoading)
+                  Container(
+                    color: ColorApp.defaultBackgroundColor.withOpacity(0.2),
+                    height: getSize(context).height,
+                    child: Center(
+                      child: LoadingAnimationWidget.horizontalRotatingDots(
+                        color: primaryMain,
+                        size: 75,
+                      ),
                     ),
-                  ),
-                )
-            ],
-          )),
+                  )
+              ],
+            )),
+      ),
     );
   }
 
@@ -97,71 +83,82 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
             SizedBox(
               height: 40,
             ),
-            Container(
-              // padding: paddingAll(24),
-              child: IntrinsicHeight(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                        // padding:
-                        //     paddingOnly(left: 48, top: 48, right: 48, bottom: 48),
-                        height: 120,
-                        width: 130,
-                        margin: paddingOnly(right: 8),
-                        decoration: BoxDecoration(
-                            borderRadius: circularBorder,
-                            border: Border.all(
-                                width: 1, color: ColorApp.secondaryText),
-                            boxShadow: [boxShadow(context)]),
-                        child: Center(
-                          child: image == null
-                              ? SvgPicture.asset(
-                                  "assets/icons/camera.svg",
-                                  width: 24.0,
-                                  color: ColorApp.secondaryText,
-                                )
-                              : Image.file(File(image!.path)),
-                        )),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () async {
-                          await selectPhoto();
-                        },
-                        child: Container(
-                          height: 50,
-                          padding: paddingAll(10),
-                          decoration: BoxDecoration(
-                              borderRadius: circularBorder,
-                              border: Border.all(width: 1, color: primaryMain),
-                              color: ColorApp.defaultBackgroundColor,
-                              boxShadow: [boxShadow(context)]),
-                          child: Center(
-                            child: Text(
-                              image == null
-                                  ? 'Ajouter une image'
-                                  : 'Modifier l\'image',
-                              style: bodyLightStyle(ColorApp.primaryText),
+            (!isLost)
+                ? Container(
+                    // padding: paddingAll(24),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                              // padding:
+                              //     paddingOnly(left: 48, top: 48, right: 48, bottom: 48),
+                              height: 120,
+                              width: 130,
+                              margin: paddingOnly(right: 8),
+                              decoration: BoxDecoration(
+                                  borderRadius: circularBorder,
+                                  border: Border.all(
+                                      width: 1, color: ColorApp.secondaryText),
+                                  boxShadow: [boxShadow(context)]),
+                              child: Center(
+                                child: image == null
+                                    ? SvgPicture.asset(
+                                        "assets/icons/camera.svg",
+                                        width: 24.0,
+                                        color: ColorApp.secondaryText,
+                                      )
+                                    : Image.file(File(image!.path)),
+                              )),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () async {
+                                await selectPhoto();
+                              },
+                              child: Container(
+                                height: 50,
+                                padding: paddingAll(10),
+                                decoration: BoxDecoration(
+                                    borderRadius: circularBorder,
+                                    border: Border.all(
+                                        width: 1, color: primaryMain),
+                                    color: ColorApp.defaultBackgroundColor,
+                                    boxShadow: [boxShadow(context)]),
+                                child: Center(
+                                  child: Text(
+                                    image == null
+                                        ? 'Ajouter une image'
+                                        : 'Modifier l\'image',
+                                    style: bodyLightStyle(ColorApp.primaryText),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  )
+                : Container(
+                    height: 50,
+                  ),
             errorText != ''
                 ? alertContainer(
                     context: context,
                     icon: Icons.error,
                     color: errorMain,
+                    borderColor: errorMain,
                     text: errorText,
                     width: 2)
-                : alertContainer(
-                    context: context,
-                    text:
-                        'Veuillez a renseignez les informations conforment a celles du document en votre presence'),
+                : !isLost
+                    ? alertContainer(
+                        context: context,
+                        text:
+                            'Veuillez a renseignez les informations conforment a celles du document en votre presence')
+                    : alertContainer(
+                        context: context,
+                        text:
+                            'Veuillez a renseignez les informations conforment a celles du document que vous avez perdu'),
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
@@ -392,72 +389,73 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
                                       ),
                                     ),
                                   )),
-                              const SizedBox(
-                                height: 24,
-                              ),
-                              Text("Votre numero de telephone",
-                                  style: bodyStyle(ColorApp.secondaryText)),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Container(
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: ColorApp.fieldColor,
-                                  borderRadius: const BorderRadius.only(
-                                      topRight: Radius.circular(4.0),
-                                      bottomRight: Radius.circular(4.0)),
-                                ),
-                                child: IntrinsicHeight(
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 45,
-                                        child: Center(
-                                          child: Text('+237',
-                                              style:
-                                                  bodyBoldStyle(primaryMain)),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: TextFormField(
-                                          cursorColor: primaryMain,
-                                          onChanged: ((value) =>
-                                              {telephone = value}),
-                                          keyboardType: TextInputType.phone,
-                                          decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.only(
-                                                left: 12, bottom: 8),
-                                            border: InputBorder.none,
-                                            focusedBorder: OutlineInputBorder(
-                                                borderRadius: const BorderRadius
-                                                        .only(
-                                                    topRight:
-                                                        Radius.circular(4.0),
-                                                    bottomRight:
-                                                        Radius.circular(4.0)),
-                                                borderSide: BorderSide(
-                                                  color: primaryMain,
-                                                  width: 1,
-                                                )),
-                                            errorBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(4)),
-                                                borderSide: BorderSide(
-                                                  color: errorMain,
-                                                  width: 1,
-                                                )),
-                                            hintText:
-                                                'Entrez votre contact ici',
-                                            hintStyle: bodyLightStyle(
-                                                ColorApp.secondaryText),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                              // const SizedBox(
+                              //   height: 24,
+                              // ),
+                              // Text("Votre numero de telephone",
+                              //     style: bodyStyle(ColorApp.secondaryText)),
+                              // const SizedBox(
+                              //   height: 5,
+                              // ),
+                              // Container(
+                              //   height: 40,
+                              //   decoration: BoxDecoration(
+                              //     color: ColorApp.fieldColor,
+                              //     borderRadius: const BorderRadius.only(
+                              //         topRight: Radius.circular(4.0),
+                              //         bottomRight: Radius.circular(4.0)),
+                              //   ),
+                              //   child: IntrinsicHeight(
+                              //     child: Row(
+                              //       children: [
+                              //         Container(
+                              //           width: 45,
+                              //           child: Center(
+                              //             child: Text('+237',
+                              //                 style:
+                              //                     bodyBoldStyle(primaryMain)),
+                              //           ),
+                              //         ),
+                              //         Expanded(
+                              //           child: TextFormField(
+                              //             cursorColor: primaryMain,
+                              //             onChanged: ((value) =>
+                              //                 {telephone = value}),
+                              //             keyboardType: TextInputType.phone,
+                              //             decoration: InputDecoration(
+                              //               contentPadding: EdgeInsets.only(
+                              //                   left: 12, bottom: 8),
+                              //               border: InputBorder.none,
+                              //               focusedBorder: OutlineInputBorder(
+                              //                   borderRadius: const BorderRadius
+                              //                           .only(
+                              //                       topRight:
+                              //                           Radius.circular(4.0),
+                              //                       bottomRight:
+                              //                           Radius.circular(4.0)),
+                              //                   borderSide: BorderSide(
+                              //                     color: primaryMain,
+                              //                     width: 1,
+                              //                   )),
+                              //               errorBorder: OutlineInputBorder(
+                              //                   borderRadius: BorderRadius.all(
+                              //                       Radius.circular(4)),
+                              //                   borderSide: BorderSide(
+                              //                     color: errorMain,
+                              //                     width: 1,
+                              //                   )),
+                              //               hintText:
+                              //                   'Entrez votre contact ici',
+                              //               hintStyle: bodyLightStyle(
+                              //                   ColorApp.secondaryText),
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //   ),
+                              // ),
+
                               Container(
                                 margin: paddingSymetric(vertical: 24),
                                 height: 40,
@@ -469,44 +467,45 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
                                     if (firstname != '' &&
                                         image != null &&
                                         surname != '' &&
-                                        category != '' &&
-                                        telephone.length == 9) {
-                                      // Document doc = Document(
-                                      //     docOwnerName:
-                                      //         surname + ' ' + firstname,
-                                      //     documentType: AppData.categoryList
-                                      //         .where((element) =>
-                                      //             element.name == category)
-                                      //         .toList()[0]
-                                      //         .fieldName,
-                                      //     finderPhoneNumber: telephone,
-                                      //     timestampAsSecond: (DateTime.now()
-                                      //                 .millisecondsSinceEpoch /
-                                      //             1000)
-                                      //         .round(),
-                                      //     documentId: '');
+                                        category != '') {
                                       String url = await Firebase.uploadImage(
                                           image!, context);
                                       if (url != '') {
-                                        Map<String, dynamic> doc = {
-                                          'docOwnerName':
-                                              surname + ' ' + firstname,
-                                          'documentType': AppData.categoryList
-                                              .where((element) =>
-                                                  element.name == category)
-                                              .toList()[0]
-                                              .fieldName,
-                                          'finderPhoneNumber': telephone,
-                                          'status': "PUBLISHED",
-                                          'imageUrl': url,
-                                          'imageCheckStatus': "PENDING",
-                                          'timestampAsSecond': (DateTime.now()
-                                                      .millisecondsSinceEpoch /
-                                                  1000)
-                                              .round(),
-                                        };
+                                        Document doc = Document(
+                                            docOwnerName:
+                                                surname + ' ' + firstname,
+                                            documentType: AppData.categoryList
+                                                .where((element) =>
+                                                    element.name == category)
+                                                .toList()[0]
+                                                .fieldName,
+                                            emitterId: '',
+                                            imageUrl: url,
+                                            timestampAsSecond: (DateTime.now()
+                                                        .millisecondsSinceEpoch /
+                                                    1000)
+                                                .round(),
+                                            documentId: '');
+
+                                        // Map<String, dynamic> doc = {
+                                        //   'docOwnerName':
+                                        //       surname + ' ' + firstname,
+                                        //   'documentType': AppData.categoryList
+                                        //       .where((element) =>
+                                        //           element.name == category)
+                                        //       .toList()[0]
+                                        //       .fieldName,
+                                        //   'finderPhoneNumber': telephone,
+                                        //   'status': "PUBLISHED",
+                                        //   'imageUrl': url,
+                                        //   'imageCheckStatus': "PENDING",
+                                        //   'timestampAsSecond': (DateTime.now()
+                                        //               .millisecondsSinceEpoch /
+                                        //           1000)
+                                        //       .round(),
+                                        // };
                                         bool res = await Firebase.sendData(
-                                            'documents', doc);
+                                            'documents', doc.toMap(doc));
                                         print('sendData: $res');
                                         if (res) {
                                           Navigator.of(context).push(
@@ -525,13 +524,56 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
                                               'Desole une erreur est servenue, Veuillez reessayer plus tard';
                                         });
                                       }
-                                    } else {
+                                    } else if(firstname != '' &&
+                                        surname != '' &&
+                                        category != '' && isLost){
+                                        DocumentLost doc = DocumentLost(
+                                            docOwnerName:
+                                                surname + ' ' + firstname,
+                                            documentType: AppData.categoryList
+                                                .where((element) =>
+                                                    element.name == category)
+                                                .toList()[0]
+                                                .fieldName,
+                                            emitterId: '',
+                                            timestampAsSecond: (DateTime.now()
+                                                        .millisecondsSinceEpoch /
+                                                    1000)
+                                                .round(),
+                                            documentId: '');
+                                       
+                                        bool res = await Firebase.sendData(
+                                            'losses', doc.toMap(doc));
+                                        print('sendData: $res');
+                                        if (res) {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      BottomNavBar()));
+                                        } else {
+                                          setState(() {
+                                            errorText =
+                                                'Desole une erreur est servenue, Veuillez reessayer plus tard';
+                                          });
+                                        }
+                                        } else {
                                       print('data not correct');
-                                      getErrorText();
+                                      setState(() {
+                                        errorText = getErrorText;
+                                      });
                                     }
                                     setState(() {
                                       isLoading = false;
                                     });
+
+                                    print('-----------' + errorText);
+                                    Future.delayed(
+                                        Duration(seconds: 3),
+                                        () => {
+                                              setState(() {
+                                                errorText = '';
+                                              })
+                                            });
                                   },
                                   child: Container(
                                       padding: paddingAll(10),

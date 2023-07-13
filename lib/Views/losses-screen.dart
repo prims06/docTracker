@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doc_tracker/Models/Class/Document.dart';
+import 'package:doc_tracker/Models/Class/Loss.dart';
 import 'package:doc_tracker/Models/Class/data.dart';
-import 'package:doc_tracker/Models/Widgets/card.dart';
+import 'package:doc_tracker/Models/Widgets/document-lost.dart';
 import 'package:doc_tracker/Models/Widgets/style.dart';
 import 'package:doc_tracker/Views/announce.dart';
 import 'package:doc_tracker/Views/document_detail.dart';
@@ -20,13 +20,13 @@ class DocumentsLostScreen extends StatefulWidget {
 
 class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
   _DocumentsLostScreenState();
-  List<Document>? Alldocuments;
-  List<Document>? Docs;
+  List<DocumentLost>? Alldocuments;
+  List<DocumentLost>? Docs;
   bool filtering = false;
   bool autofocus = false;
   String searchInitValue = '';
   CollectionReference documents =
-      FirebaseFirestore.instance.collection('documents');
+      FirebaseFirestore.instance.collection('losses');
 
   void docList() async {
     QuerySnapshot querySnapshot = await documents
@@ -35,7 +35,7 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
         .orderBy('timestampAsSecond', descending: true)
         .get();
     setState(() {
-      Docs = Alldocuments = [];
+      Docs = Alldocuments = DocumentLost.fromQuerySnapshot(querySnapshot);
     });
   }
 
@@ -105,11 +105,11 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
               Docs!.length,
               (index) => InkWell(
                   onTap: (() {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                            DocumentDetailScreen(document: Docs![index])));
+                    // Navigator.of(context).push(MaterialPageRoute(
+                    //     builder: (context) =>
+                    //         DocumentDetailScreen(document: Docs![index])));
                   }),
-                  child: DocumentCard(doc: Docs![index]))),
+                  child: DocumentLostCard(doc: Docs![index]))),
         ),
       );
     }
@@ -144,19 +144,22 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
           ),
         );
 
-    return pageScaffold(
-        UpPage,
-        Docs == null
-            ? SizedBox(
-                height: getSize(context).height / 2.5,
-                child: Center(
-                  child: LoadingAnimationWidget.horizontalRotatingDots(
-                    color: primaryMain,
-                    size: 75,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+      child: pageScaffold(
+          UpPage,
+          Docs == null
+              ? SizedBox(
+                  height: getSize(context).height / 2.5,
+                  child: Center(
+                    child: LoadingAnimationWidget.horizontalRotatingDots(
+                      color: primaryMain,
+                      size: 75,
+                    ),
                   ),
-                ),
-              )
-            : listView());
+                )
+              : listView()),
+    );
   }
 
   @override

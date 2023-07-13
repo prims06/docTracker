@@ -24,6 +24,7 @@ class Firebase {
 
   static Future<bool> sendData(
       String collectionName, Map<String, dynamic> data) async {
+    print(data);
     var result = await db.collection(collectionName).add(data);
     if (result == null) {
       return false;
@@ -35,7 +36,7 @@ class Firebase {
   static Future<bool> sendDataToID(
       String collectionName, String id, Map<String, dynamic> data) async {
     await db.collection(collectionName).doc(id).set(data);
-      return true;
+    return true;
   }
 
   static Future<String> uploadImage(XFile image, BuildContext context) async {

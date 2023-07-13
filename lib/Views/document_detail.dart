@@ -262,10 +262,10 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
                       children: [
                         GestureDetector(
                           onTap: () async {
-                            var whatsappUrl =
-                                "whatsapp://send?phone=237${widget.document.finderPhoneNumber}" +
-                                    "&text=${Uri.encodeComponent("Bonjour \n Je suis ${widget.document.docOwnerName} \n Je vous écrit à propos du document que vous avez trouvé m'appartenant")}";
-                            await launchUrl(Uri.parse(whatsappUrl));
+                            // var whatsappUrl =
+                            //     "whatsapp://send?phone=237${widget.document.finderPhoneNumber}" +
+                            //         "&text=${Uri.encodeComponent("Bonjour \n Je suis ${widget.document.docOwnerName} \n Je vous écrit à propos du document que vous avez trouvé m'appartenant")}";
+                            // await launchUrl(Uri.parse(whatsappUrl));
                           },
                           child: Container(
                             padding: paddingOnly(
@@ -287,8 +287,8 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
                           child: GestureDetector(
                             onTap: () async {
                               // Firebase.updateStatus(widget.document.documentId);
-                              await launchUrl(Uri.parse(
-                                  'tel://+237${widget.document.finderPhoneNumber}'));
+                              // await launchUrl(Uri.parse(
+                                  // 'tel://+237${widget.document.finderPhoneNumber}'));
                             },
                             child: Container(
                               padding: paddingAll(10),

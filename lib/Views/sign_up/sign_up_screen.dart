@@ -10,9 +10,12 @@ class SignUpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     ColorApp().init(context);
     SizeConfig().init(context);
-    return Scaffold(
-      
-      body: Body(),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+      child: Scaffold(
+        
+        body: Body(),
+      ),
     );
   }
 }

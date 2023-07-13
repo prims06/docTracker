@@ -1,5 +1,7 @@
 import 'package:doc_tracker/Controllers/Firebase/Auth.dart';
 import 'package:doc_tracker/Views/home_screen.dart';
+import 'package:doc_tracker/Views/nav-bar.dart';
+import 'package:doc_tracker/Views/sign_in/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -13,16 +15,18 @@ class _StatusAuthState extends State<StatusAuth> {
   User? user;
   bool authentificated = false;
   AuthServices auth = AuthServices();
+
   Future<void> getuser() async {
     await auth.user.then((userResult) => {
           if (userResult == null)
-            {
-              auth
-                  .signInAnonymously()
-                  .then((value) => {authentificated == true})
-            }
+            {authentificated = false}
           else
-            {authentificated == true}
+            {
+              setState(() {
+                authentificated = true;
+              })
+            },
+          print(authentificated),
         });
   }
 
@@ -33,6 +37,6 @@ class _StatusAuthState extends State<StatusAuth> {
   }
 
   Widget build(BuildContext context) {
-    return HomeScreen();
+    return authentificated ? BottomNavBar() : SignInScreen();
   }
 }

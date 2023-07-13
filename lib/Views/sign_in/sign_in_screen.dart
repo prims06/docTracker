@@ -10,11 +10,14 @@ class SignInScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     ColorApp().init(context);
     SizeConfig().init(context);
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: Text("Sign In"),
-      // ),
-      body: Body(),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+      child: Scaffold(
+        // appBar: AppBar(
+        //   title: Text("Sign In"),
+        // ),
+        body: Body(),
+      ),
     );
   }
 }

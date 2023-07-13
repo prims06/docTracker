@@ -1,50 +1,70 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doc_tracker/Models/Widgets/const.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
-class Lost {
-  Lost(
-      {required this.type,
-      required this.completeName,
-      required this.telephone});
+class DocumentLost {
+  final String documentId;
+  final String docOwnerName;
+  final String documentType;
+  final String emitterId;
+  final String status;
+  final int timestampAsSecond;
+  final format = DateFormat('dd-MM-yyyy');
+  final format2 = DateFormat('dd.MM.yyyyTHH:mm');
 
-  Lost.fromJson(Map<String, Object?> json)
-      : this(
-          type: json['type']! as String,
-          completeName: json['completeName']! as String,
-          telephone: json['telephone']! as int,
-        );
+  DocumentLost(
+      {required this.docOwnerName,
+      required this.documentType,
+      required this.emitterId,
+      this.status = 'PUBLISHED',
+      required this.timestampAsSecond,
+      required this.documentId});
 
-  final String type;
-  final String completeName;
-  final int telephone;
-
-  Map<String, Object?> toJson() {
-    return {
-      'type': type,
-      'completeName': completeName,
-      'telephone': telephone,
-    };
+  String formatTimeStamp() {
+    return format.format(
+        DateTime.fromMillisecondsSinceEpoch(timestampAsSecond * 1000)
+            .toLocal());
   }
 
-  static Lost fromDocumentSnapshot(DocumentSnapshot documentSnapshot) {
+  String formatTimeStamp2() {
+    return format2.format(
+        DateTime.fromMillisecondsSinceEpoch(timestampAsSecond * 1000)
+            .toLocal());
+  }
+
+  Map<String, dynamic> toMap(DocumentLost doc) => {
+        'docOwnerName': doc.docOwnerName,
+        'documentType': doc.documentType,
+        'status': 'PUBLISHED',
+        'emitterId': FirebaseAuth.instance.currentUser!.uid,
+        'timestampAsSecond': getStamp
+  };
+
+  static DocumentLost fromDocumentSnapshot(DocumentSnapshot documentSnapshot) {
     final Map<String, dynamic> doc =
         documentSnapshot.data() as Map<String, dynamic>;
-    return Lost(
-        // documentId: documentSnapshot.id,
-        completeName: doc["completeName"],
-        type: doc["type"],
-        telephone: doc["telephone"]);
+    return DocumentLost(
+        documentId: documentSnapshot.id,
+        docOwnerName: doc["docOwnerName"],
+        documentType: doc["documentType"],
+        status: doc["status"],
+        emitterId: doc["emitterId"],
+        timestampAsSecond: doc["timestampAsSecond"]);
   }
 
-  // Lost lostDocument;
-  Future<void> addUser(Lost lostDocument) {
-    CollectionReference lostCollection =
-        FirebaseFirestore.instance.collection('loses');
-    // Call the user's CollectionReference to add a new user
-    return lostCollection
-        .add({
-          lostDocument.toJson(),
-        })
-        .then((value) => print("User Added"))
-        .catchError((error) => print("Failed to add user: $error"));
+  static List<DocumentLost> fromQuerySnapshot(QuerySnapshot querySnapshot) {
+    List<DocumentLost> documents = [];
+    for (final doc in querySnapshot.docs) {
+      final document = DocumentLost(
+          documentId: doc.id,
+          docOwnerName: doc["docOwnerName"],
+          documentType: doc["documentType"],
+          status: doc["status"],
+          emitterId: doc["emitterId"],
+          timestampAsSecond: doc["timestampAsSecond"]);
+      documents.add(document);
+    } // end for
+    return documents;
   }
 }

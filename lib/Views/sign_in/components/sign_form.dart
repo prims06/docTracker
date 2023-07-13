@@ -118,7 +118,7 @@ class _SignFormState extends State<SignForm> {
         } else if (value.length >= 6) {
           removeError(error: kShortPassError);
         }
-        return null;
+        password = value;
       },
       validator: (value) {
         if (value!.isEmpty) {

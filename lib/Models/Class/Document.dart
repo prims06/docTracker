@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doc_tracker/Models/Widgets/const.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class Document {
   final String documentId;
   final String docOwnerName;
   final String documentType;
-  final String finderPhoneNumber;
+  final String emitterId;
   final String imageUrl;
   final int timestampAsSecond;
   final format = DateFormat('dd-MM-yyyy');
@@ -14,7 +16,7 @@ class Document {
   Document(
       {required this.docOwnerName,
       required this.documentType,
-      required this.finderPhoneNumber,
+      required this.emitterId,
       this.imageUrl = '',
       required this.timestampAsSecond,
       required this.documentId});
@@ -31,6 +33,15 @@ class Document {
             .toLocal());
   }
 
+  Map<String, dynamic> toMap(Document doc) => {
+        'docOwnerName': doc.docOwnerName,
+        'documentType': doc.documentType,
+        'status': 'PENDING',
+        'imageUrl': doc.imageUrl,
+        'emitterId': FirebaseAuth.instance.currentUser!.uid,
+        'timestampAsSecond': getStamp
+  };
+
   static Document fromDocumentSnapshot(DocumentSnapshot documentSnapshot) {
     final Map<String, dynamic> doc =
         documentSnapshot.data() as Map<String, dynamic>;
@@ -39,7 +50,7 @@ class Document {
         docOwnerName: doc["docOwnerName"],
         documentType: doc["documentType"],
         imageUrl: doc["imageUrl"],
-        finderPhoneNumber: doc["finderPhoneNumber"],
+        emitterId: doc["emitterId"],
         timestampAsSecond: doc["timestampAsSecond"]);
   }
 
@@ -51,7 +62,7 @@ class Document {
           docOwnerName: doc["docOwnerName"],
           documentType: doc["documentType"],
           imageUrl: doc["imageUrl"],
-          finderPhoneNumber: doc["finderPhoneNumber"],
+          emitterId: doc["emitterId"],
           timestampAsSecond: doc["timestampAsSecond"]);
       documents.add(document);
     } // end for

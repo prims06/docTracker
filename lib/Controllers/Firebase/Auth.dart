@@ -1,4 +1,5 @@
 import 'package:doc_tracker/Controllers/Firebase/Firebase.dart';
+import 'package:doc_tracker/Models/Widgets/const.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthServices {
@@ -6,6 +7,7 @@ class AuthServices {
 
   Future<User?> get user async {
     final user = auth.currentUser;
+    print(user);
     return user;
   }
 
@@ -35,10 +37,10 @@ class AuthServices {
         email: email,
         password: password,
       );
-      await Firebase.sendDataToID('users',credential.user!.uid, {
+      await Firebase.sendDataToID('users', credential.user!.uid, {
         'firstName': firstName,
         'lastName': lastName,
-        'createDate': (DateTime.now().millisecondsSinceEpoch / 1000).round(),
+        'createDate': getStamp,
         'phoneNumber': phone
       });
       return true;

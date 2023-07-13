@@ -24,7 +24,7 @@ class ColorApp {
   }
 }
 
-Color primaryMain = Color(0xFFFF7643);
+const Color primaryMain = Color(0xFFFF7643);
 Color primaryHover = Color(0xffFFDAB9);
 Color primaryClick = Color(0xffFF8C00);
 Color white = Color(0xffFFFFFF);
@@ -201,15 +201,16 @@ Widget alertContainer(
         {context,
         text,
         icon = Icons.warning_sharp,
+        borderColor = primaryMain,
         color = Colors.yellowAccent,
-        width = 0.5}) =>
+       double width = 0.5}) =>
     Container(
       margin: paddingSymetric(vertical: 24),
       padding: paddingAll(8),
       decoration: BoxDecoration(
         borderRadius: circularBorder,
         color: ColorApp.defaultBackgroundColor,
-        border: Border.all(width: width, color: primaryMain),
+        border: Border.all(width: width, color: borderColor),
         // boxShadow [boxShadow(context)]
       ),
       child: Row(
