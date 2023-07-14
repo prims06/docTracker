@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doc_tracker/Controllers/Firebase/Firebase.dart';
 import 'package:doc_tracker/Models/Class/Loss.dart';
+import 'package:doc_tracker/Models/Class/Notification.dart';
 import 'package:doc_tracker/Models/Class/data.dart';
+import 'package:doc_tracker/Models/Widgets/button.dart';
+import 'package:doc_tracker/Models/Widgets/const.dart';
 import 'package:doc_tracker/Models/Widgets/document-lost.dart';
 import 'package:doc_tracker/Models/Widgets/style.dart';
 import 'package:doc_tracker/Views/announce.dart';
@@ -24,7 +28,9 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
   List<DocumentLost>? Docs;
   bool filtering = false;
   bool autofocus = false;
+  bool isBottomSheet = false;
   String searchInitValue = '';
+  List<Category> categories = [];
   CollectionReference documents =
       FirebaseFirestore.instance.collection('losses');
 
@@ -36,6 +42,7 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
         .get();
     setState(() {
       Docs = Alldocuments = DocumentLost.fromQuerySnapshot(querySnapshot);
+      selectedDoc = Docs![0];
     });
   }
 
@@ -54,6 +61,14 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
   }
 
   int selectedTabId = 0;
+  DocumentLost? selectedDoc;
+  @override
+  initState() {
+    super.initState();
+
+    docList();
+  }
+
   @override
   Widget build(BuildContext context) {
     ColorApp().init(context);
@@ -105,6 +120,21 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
               Docs!.length,
               (index) => InkWell(
                   onTap: (() {
+                    setState(() {
+                      selectedDoc = Docs![index];
+                      Category categorie = AppData.categoryList
+                          .where((element) =>
+                              element.fieldName == selectedDoc!.documentType)
+                          .toList()[0];
+                      categories = [
+                        categorie,
+                        ...AppData.categoryList
+                            .where((element) =>
+                                element.fieldName != selectedDoc!.documentType)
+                            .toList()
+                      ];
+                      isBottomSheet = true;
+                    });
                     // Navigator.of(context).push(MaterialPageRoute(
                     //     builder: (context) =>
                     //         DocumentDetailScreen(document: Docs![index])));
@@ -115,13 +145,12 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
     }
 
     Widget pageScaffold(Widget search, Widget listElement) => Scaffold(
+          bottomSheet: (selectedDoc == null || !isBottomSheet)
+              ? SizedBox()
+              : _detailWidget(doc: selectedDoc!),
           body: Container(
             padding: paddingOnly(top: 70, bottom: 0, right: 16, left: 16),
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('assets/images/pattern_success.png'),
-                    opacity: 0.3,
-                    fit: BoxFit.cover)),
+            
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,7 +174,12 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
         );
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+        setState(() {
+          isBottomSheet = false;
+        });
+      },
       child: pageScaffold(
           UpPage,
           Docs == null
@@ -162,10 +196,175 @@ class _DocumentsLostScreenState extends State<DocumentsLostScreen> {
     );
   }
 
-  @override
-  initState() {
-    super.initState();
-    docList();
+  Widget _detailWidget({required DocumentLost doc}) {
+    return Container(
+      height: getSize(context).height / 2.2,
+      child: DraggableScrollableSheet(
+        maxChildSize: 1,
+        initialChildSize: 1,
+        minChildSize: .53,
+        builder: (context, scrollController) {
+          return Container(
+            // margin: paddingAll(24),
+            padding: paddingSymetric(horizontal: 24, vertical: 16),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+                color: ColorApp.defaultBackgroundColor),
+            child: SingleChildScrollView(
+              controller: scrollController,
+              // physics: NeverScrollableScrollPhysics(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                // mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  SizedBox(height: 5),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: 50,
+                      height: 5,
+                      decoration: BoxDecoration(
+                          color: ColorApp.disabledText.withOpacity(.5),
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                    ),
+                  ),
+                  alertContainer(
+                      context: context,
+                      text:
+                          'Veuillez vous assurer que ce document contient les bonnes informations avant d\'engager une action quelconque'),
+                  Text(
+                    doc.docOwnerName.toUpperCase(),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    style: supertitleStyle(ColorApp.secondaryText),
+                  ),
+                  Container(
+                    margin: paddingSymetric(vertical: 16),
+                    width: getSize(context).width,
+                    height: 50,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: categories
+                          .map((e) => CategoryWidget(
+                              model: e,
+                              isSelected: doc.documentType == e.fieldName))
+                          .toList(),
+                    ),
+                  ),
+                  Container(
+                    margin: paddingSymetric(vertical: 16),
+                    child: Text(
+                      "Plublié le ${doc.formatTimeStamp2().split('T')[0]} à ${doc.formatTimeStamp2().split('T')[1]}",
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      style: footfilterStyle(ColorApp.secondaryText),
+                    ),
+                  ),
+                  // DateTime.parse(givenDate).toLocal();
+                  // Container(
+                  //   // padding: paddingAll(24),
+                  //   child: IntrinsicHeight(
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //       children: [
+                  //         GestureDetector(
+                  //           onTap: () async {
+                  //             // var whatsappUrl =
+                  //             //     "whatsapp://send?phone=237${doc.finderPhoneNumber}" +
+                  //             //         "&text=${Uri.encodeComponent("Bonjour \n Je suis ${doc.docOwnerName} \n Je vous écrit à propos du document que vous avez trouvé m'appartenant")}";
+                  //             // await launchUrl(Uri.parse(whatsappUrl));
+                  //           },
+                  //           child: Container(
+                  //             padding: paddingOnly(
+                  //                 left: 16, top: 10, right: 16, bottom: 10),
+                  //             margin: paddingOnly(right: 16),
+                  //             decoration: BoxDecoration(
+                  //                 borderRadius: circularBorder,
+                  //                 gradient: kPrimaryGradientColor,
+                  //                 color: ColorApp.defaultBackgroundColor,
+                  //                 boxShadow: [boxShadow(context)]),
+                  //             child: Icon(
+                  //               Icons.whatsapp,
+                  //               color: white,
+                  //               size: 28,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //         Expanded(
+                  //           child: GestureDetector(
+                  //             onTap: () async {
+                  // NotificationApp not = NotificationApp(
+                  //     description:
+                  //         'init_request_for_get_back_by_loster',
+                  //     receiverId: doc.emitterId,
+                  //     documentType: doc.documentType,
+                  //     emitterId: '',
+                  //     owner: doc.docOwnerName,
+                  //     timestampAsSecond: getStamp,
+                  //     notifictionId: '');
+                  // Firebase.sendData(
+                  //     'notifications', not.toMap(not));
+                  //               // Firebase.updateStatus(doc.documentId);
+                  //               // await launchUrl(Uri.parse(
+                  //               // 'tel://+237${doc.finderPhoneNumber}'));
+                  //             },
+                  //             child: Container(
+                  //               padding: paddingAll(10),
+                  //               decoration: BoxDecoration(
+                  //                   borderRadius: circularBorder,
+                  //                   border:
+                  //                       Border.all(width: 1, color: primaryMain),
+                  //                   color: ColorApp.defaultBackgroundColor,
+                  //                   boxShadow: [boxShadow(context)]),
+                  //               child: Row(
+                  //                 mainAxisAlignment: MainAxisAlignment.center,
+                  //                 children: [
+                  //                   Icon(
+                  //                     Icons.phone,
+                  //                     color: primaryMain,
+                  //                   ),
+                  //                   SizedBox(
+                  //                     width: 10,
+                  //                   ),
+                  //                   Text(
+                  //                     'Telephoner',
+                  //                     style: bodyLightStyle(ColorApp.primaryText),
+                  //                   )
+                  //                 ],
+                  //               ),
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+
+                  DefaultButton(
+                    text: 'J\'ai trouvé ce document',
+                    press: () {
+                      NotificationApp not = NotificationApp(
+                          description: 'init_request_for_get_back_by_founder',
+                          receiverId: doc.emitterId,
+                          documentType: doc.documentType,
+                          emitterId: '',
+                          owner: doc.docOwnerName,
+                          timestampAsSecond: getStamp,
+                          notifictionId: '');
+                      Firebase.sendData('notifications', not.toMap(not));
+                    },
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget search() {

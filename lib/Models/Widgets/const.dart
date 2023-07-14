@@ -1,4 +1,5 @@
 import 'package:doc_tracker/Models/Widgets/style.dart';
+import 'package:doc_tracker/Views/nav-bar.dart';
 import 'package:doc_tracker/Views/sign_up/sign_up_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -86,6 +87,9 @@ const String unknowError = "Authentification failed ! Please retry";
 const String domainNameService = "tracker.cm";
 
 int get getStamp => (DateTime.now().millisecondsSinceEpoch / 1000).round();
+
+ navigate(context,Widget to)=> Navigator.of(context).push(MaterialPageRoute(
+                          builder: ((context) => to)));
 
 otpInputDecoration(BuildContext context) => InputDecoration(
       contentPadding:

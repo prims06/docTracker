@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doc_tracker/Controllers/Firebase/Firebase.dart';
+import 'package:doc_tracker/Models/Class/Notification.dart';
 import 'package:doc_tracker/Models/Widgets/style.dart';
 import 'package:doc_tracker/Views/announce.dart';
 import 'package:doc_tracker/Views/documents.dart';
 import 'package:doc_tracker/Views/losses-screen.dart';
-import 'package:doc_tracker/profile.dart';
+import 'package:doc_tracker/Views/profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,19 +18,49 @@ class BottomNavBar extends StatefulWidget {
   _BottomNavBarState createState() => _BottomNavBarState();
 }
 
+Future<List<NotificationApp>> getNotifs() async {
+  QuerySnapshot querySnapshot1 = await FirebaseFirestore.instance
+      .collection('notifications')
+      .where("emitterId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .orderBy('timestampAsSecond', descending: true)
+      .get();
+  QuerySnapshot querySnapshot2 = await FirebaseFirestore.instance
+      .collection('notifications')
+      .where("receiverId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .orderBy('timestampAsSecond', descending: true)
+      .get();
+
+  var listNotifs = NotificationApp.fromQuerySnapshot(querySnapshot1) +
+      NotificationApp.fromQuerySnapshot(querySnapshot2);
+  listNotifs
+      .sort(((a, b) => a.timestampAsSecond.compareTo(b.timestampAsSecond)));
+  return listNotifs;
+}
+
 class _BottomNavBarState extends State<BottomNavBar> {
   int _selectedItem = 0;
   bool internet = false;
-  final List<Widget> page = [
+
+  List<Widget> page = [
     DocumentsScreen(),
     DocumentsLostScreen(),
     MakeAnnouncePage(),
     ProfileScreen(),
   ];
 
+  getNotifications() async {
+    print('notifs debut');
+    print(notifs);
+    notifs = await getNotifs();
+    print('notifs fin');
+    print(notifs);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
+    getNotifications();
+
     super.initState();
   }
 
@@ -81,7 +115,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     "assets/icons/id-card.svg",
     "assets/icons/carnet.svg",
     "assets/icons/add.svg",
-    "assets/icons/setting.svg"
+    "assets/icons/user.svg"
   ];
   List<String> _iconList = [];
 
@@ -193,7 +227,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
               //     : SizedBox(),
               index == 3
                   ? Text(
-                      'Setting'.i18n(),
+                      'Profile'.i18n(),
                       style: overlineStyle(index == _selectedIndex
                           ? primaryMain
                           : ColorApp.secondaryText),

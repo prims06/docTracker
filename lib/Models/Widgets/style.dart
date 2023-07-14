@@ -323,7 +323,7 @@ Widget CustomAppBar(
                 children: [
                   InkWell(
                     onTap: () {
-                      Navigator.of(context).pop("isPop");
+                      Navigator.pop(context);
                     },
                     child: Container(
                       height: 60,

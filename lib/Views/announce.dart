@@ -26,7 +26,7 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
   String telephone = '';
   String category = '';
   bool isLoading = false;
-  bool isLost = true;
+  int isLost = 0;
   String errorText = '';
 
   String get getErrorText {
@@ -37,10 +37,22 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
       return 'Veuillez choisir le type de document concerné !';
     } else if (surname == '') {
       return 'Veuillez renseigner le prenom du proprietaire du document !';
-    } else if (image == null && !isLost) {
+    } else if (image == null && isLost != 1) {
       return 'Veuillez renseigner une image du document en votre possession !';
     }
     return '';
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    isLost = 0;
+    super.dispose();
   }
 
   @override
@@ -49,28 +61,85 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
       child: Scaffold(
-        body: Container(
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('assets/images/pattern_success.png'),
-                    opacity: 0.3,
-                    fit: BoxFit.cover)),
-            child: Stack(
-              children: [
-                SingleChildScrollView(child: planer()),
-                if (isLoading)
-                  Container(
-                    color: ColorApp.defaultBackgroundColor.withOpacity(0.2),
-                    height: getSize(context).height,
-                    child: Center(
-                      child: LoadingAnimationWidget.horizontalRotatingDots(
-                        color: primaryMain,
-                        size: 75,
+        body: Stack(
+          children: [
+            SingleChildScrollView(child: planer()),
+            if (isLoading)
+              Container(
+                color: ColorApp.defaultBackgroundColor.withOpacity(0.2),
+                height: getSize(context).height,
+                child: Center(
+                  child: LoadingAnimationWidget.horizontalRotatingDots(
+                    color: primaryMain,
+                    size: 75,
+                  ),
+                ),
+              ),
+            if (isLost == 0)
+              Container(
+                color: ColorApp.blackWhiteColor.withOpacity(0.6),
+                height: getSize(context).height,
+                child: Column(
+                  children: [
+                    Container(),
+                    Spacer(),
+                    Container(
+                      height: 180,
+                      width: 250,
+                      margin: paddingOnly(bottom: 24),
+                      decoration: BoxDecoration(
+                        color: ColorApp.defaultBackgroundColor,
+                        borderRadius: BorderRadius.circular(25),
+                        boxShadow: [boxShadow(context)],
+                      ),
+                      padding: paddingAll(16),
+                      child: Center(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                "Faites un choix",
+                                style: subtitleStyle(ColorApp.primaryText),
+                              ),
+                              Divider(height: 1, color: ColorApp.disabledText),
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isLost = 2;
+                                  });
+                                },
+                                child: Container(
+                                  padding: paddingAll(4),
+                                  child: Text(
+                                    'J\'ai trouvé un document',
+                                    style: bodyLightStyle(primaryMain),
+                                  ),
+                                ),
+                              ),
+                              Divider(height: 1, color: ColorApp.disabledText),
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isLost = 1;
+                                  });
+                                },
+                                child: Container(
+                                  padding: paddingAll(4),
+                                  child: Text(
+                                    'J\'ai perdu un document',
+                                    style: bodyLightStyle(primaryMain),
+                                  ),
+                                ),
+                              ),
+                              Divider(height: 1, color: ColorApp.disabledText),
+                            ]),
                       ),
                     ),
-                  )
-              ],
-            )),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -83,7 +152,7 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
             SizedBox(
               height: 40,
             ),
-            (!isLost)
+            (isLost == 2)
                 ? Container(
                     // padding: paddingAll(24),
                     child: IntrinsicHeight(
@@ -150,7 +219,7 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
                     borderColor: errorMain,
                     text: errorText,
                     width: 2)
-                : !isLost
+                : isLost == 2
                     ? alertContainer(
                         context: context,
                         text:
@@ -164,7 +233,9 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
               child: Padding(
                 padding: EdgeInsets.only(top: getSize(context).width * .00),
                 child: Text(
-                  'Infos sur le document',
+                  isLost == 1
+                      ? 'Infos sur le document perdu'
+                      : 'Infos sur le document trouvé',
                   style: bodyBoldStyle(ColorApp.secondaryText),
                 ),
               ),
@@ -524,39 +595,40 @@ class _MakeAnnouncePageState extends State<MakeAnnouncePage> {
                                               'Desole une erreur est servenue, Veuillez reessayer plus tard';
                                         });
                                       }
-                                    } else if(firstname != '' &&
+                                    } else if (firstname != '' &&
                                         surname != '' &&
-                                        category != '' && isLost){
-                                        DocumentLost doc = DocumentLost(
-                                            docOwnerName:
-                                                surname + ' ' + firstname,
-                                            documentType: AppData.categoryList
-                                                .where((element) =>
-                                                    element.name == category)
-                                                .toList()[0]
-                                                .fieldName,
-                                            emitterId: '',
-                                            timestampAsSecond: (DateTime.now()
-                                                        .millisecondsSinceEpoch /
-                                                    1000)
-                                                .round(),
-                                            documentId: '');
-                                       
-                                        bool res = await Firebase.sendData(
-                                            'losses', doc.toMap(doc));
-                                        print('sendData: $res');
-                                        if (res) {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      BottomNavBar()));
-                                        } else {
-                                          setState(() {
-                                            errorText =
-                                                'Desole une erreur est servenue, Veuillez reessayer plus tard';
-                                          });
-                                        }
-                                        } else {
+                                        category != '' &&
+                                        isLost == 1) {
+                                      DocumentLost doc = DocumentLost(
+                                          docOwnerName:
+                                              surname + ' ' + firstname,
+                                          documentType: AppData.categoryList
+                                              .where((element) =>
+                                                  element.name == category)
+                                              .toList()[0]
+                                              .fieldName,
+                                          emitterId: '',
+                                          timestampAsSecond: (DateTime.now()
+                                                      .millisecondsSinceEpoch /
+                                                  1000)
+                                              .round(),
+                                          documentId: '');
+
+                                      bool res = await Firebase.sendData(
+                                          'losses', doc.toMap(doc));
+                                      print('sendData: $res');
+                                      if (res) {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    BottomNavBar()));
+                                      } else {
+                                        setState(() {
+                                          errorText =
+                                              'Desole une erreur est servenue, Veuillez reessayer plus tard';
+                                        });
+                                      }
+                                    } else {
                                       print('data not correct');
                                       setState(() {
                                         errorText = getErrorText;

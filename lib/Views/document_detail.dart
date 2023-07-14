@@ -1,8 +1,10 @@
 import 'dart:convert';
-
 import 'package:doc_tracker/Controllers/Firebase/Firebase.dart';
 import 'package:doc_tracker/Models/Class/Document.dart';
+import 'package:doc_tracker/Models/Class/Notification.dart';
 import 'package:doc_tracker/Models/Class/data.dart';
+import 'package:doc_tracker/Models/Widgets/button.dart';
+import 'package:doc_tracker/Models/Widgets/const.dart';
 import 'package:doc_tracker/Models/Widgets/style.dart';
 import 'package:doc_tracker/Views/image_screen.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -89,7 +91,8 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          customIconButton(context,
+          customIconButton(
+            context,
             icon: Icons.arrow_back_ios,
             press: () {
               Navigator.of(context).pop();
@@ -102,7 +105,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
               decoration: BoxDecoration(
                   borderRadius: circularBorder,
                   color: ColorApp.defaultBackgroundColor,
-                  boxShadow:[boxShadow(context)]),
+                  boxShadow: [boxShadow(context)]),
               child: Row(
                 children: [
                   Icon(
@@ -254,73 +257,99 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
                   ),
                 ),
                 // DateTime.parse(givenDate).toLocal();
-                Container(
-                  // padding: paddingAll(24),
-                  child: IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        GestureDetector(
-                          onTap: () async {
-                            // var whatsappUrl =
-                            //     "whatsapp://send?phone=237${widget.document.finderPhoneNumber}" +
-                            //         "&text=${Uri.encodeComponent("Bonjour \n Je suis ${widget.document.docOwnerName} \n Je vous écrit à propos du document que vous avez trouvé m'appartenant")}";
-                            // await launchUrl(Uri.parse(whatsappUrl));
-                          },
-                          child: Container(
-                            padding: paddingOnly(
-                                left: 16, top: 10, right: 16, bottom: 10),
-                            margin: paddingOnly(right: 16),
-                            decoration: BoxDecoration(
-                                borderRadius: circularBorder,
-                                gradient: kPrimaryGradientColor,
-                                color: ColorApp.defaultBackgroundColor,
-                                boxShadow:[boxShadow(context)]),
-                            child: Icon(
-                              Icons.whatsapp,
-                              color: white,
-                              size: 28,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              // Firebase.updateStatus(widget.document.documentId);
-                              // await launchUrl(Uri.parse(
-                                  // 'tel://+237${widget.document.finderPhoneNumber}'));
-                            },
-                            child: Container(
-                              padding: paddingAll(10),
-                              decoration: BoxDecoration(
-                                  borderRadius: circularBorder,
-                                  border:
-                                      Border.all(width: 1, color: primaryMain),
-                                  color: ColorApp.defaultBackgroundColor,
-                                  boxShadow:[boxShadow(context)]),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.phone,
-                                    color: primaryMain,
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    'Telephoner',
-                                    style: bodyLightStyle(ColorApp.primaryText),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                // Container(
+                //   // padding: paddingAll(24),
+                //   child: IntrinsicHeight(
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //       children: [
+                //         GestureDetector(
+                //           onTap: () async {
+                //             // var whatsappUrl =
+                //             //     "whatsapp://send?phone=237${widget.document.finderPhoneNumber}" +
+                //             //         "&text=${Uri.encodeComponent("Bonjour \n Je suis ${widget.document.docOwnerName} \n Je vous écrit à propos du document que vous avez trouvé m'appartenant")}";
+                //             // await launchUrl(Uri.parse(whatsappUrl));
+                //           },
+                //           child: Container(
+                //             padding: paddingOnly(
+                //                 left: 16, top: 10, right: 16, bottom: 10),
+                //             margin: paddingOnly(right: 16),
+                //             decoration: BoxDecoration(
+                //                 borderRadius: circularBorder,
+                //                 gradient: kPrimaryGradientColor,
+                //                 color: ColorApp.defaultBackgroundColor,
+                //                 boxShadow: [boxShadow(context)]),
+                //             child: Icon(
+                //               Icons.whatsapp,
+                //               color: white,
+                //               size: 28,
+                //             ),
+                //           ),
+                //         ),
+                //         Expanded(
+                //           child: GestureDetector(
+                //             onTap: () async {
+                // NotificationApp not = NotificationApp(
+                //     description:
+                //         'init_request_for_get_back_by_loster',
+                //     receiverId: widget.document.emitterId,
+                //     documentType: widget.document.documentType,
+                //     emitterId: '',
+                //     owner: widget.document.docOwnerName,
+                //     timestampAsSecond: getStamp,
+                //     notifictionId: '');
+                // Firebase.sendData(
+                //     'notifications', not.toMap(not));
+                //               // Firebase.updateStatus(widget.document.documentId);
+                //               // await launchUrl(Uri.parse(
+                //               // 'tel://+237${widget.document.finderPhoneNumber}'));
+                //             },
+                //             child: Container(
+                //               padding: paddingAll(10),
+                //               decoration: BoxDecoration(
+                //                   borderRadius: circularBorder,
+                //                   border:
+                //                       Border.all(width: 1, color: primaryMain),
+                //                   color: ColorApp.defaultBackgroundColor,
+                //                   boxShadow: [boxShadow(context)]),
+                //               child: Row(
+                //                 mainAxisAlignment: MainAxisAlignment.center,
+                //                 children: [
+                //                   Icon(
+                //                     Icons.phone,
+                //                     color: primaryMain,
+                //                   ),
+                //                   SizedBox(
+                //                     width: 10,
+                //                   ),
+                //                   Text(
+                //                     'Telephoner',
+                //                     style: bodyLightStyle(ColorApp.primaryText),
+                //                   )
+                //                 ],
+                //               ),
+                //             ),
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+
+                DefaultButton(
+                  text: 'Ce document m\'appartient',
+                  press: () {
+                    NotificationApp not = NotificationApp(
+                        description: 'init_request_for_get_back_by_loster',
+                        receiverId: widget.document.emitterId,
+                        documentType: widget.document.documentType,
+                        emitterId: '',
+                        owner: widget.document.docOwnerName,
+                        timestampAsSecond: getStamp,
+                        notifictionId: '');
+                    Firebase.sendData('notifications', not.toMap(not));
+                  },
+                )
               ],
             ),
           ),
@@ -380,7 +409,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen>
               color: isSelected ? primaryMain : ColorApp.disabledText,
               width: isSelected ? 2 : 1,
             ),
-            boxShadow:[boxShadow(context)]),
+            boxShadow: [boxShadow(context)]),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
